@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
+  --font-serif: 'Georgia', 'Times New Roman', serif;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  @apply bg-calmint-cream text-calmint-dark font-sans antialiased;
+}
+
+/* Contenedor principal */
+.container-calmint {
+  @apply max-w-6xl mx-auto px-4;
+}
+
+/* Estilos de sección con padding consistente */
+.section-padding {
+  @apply py-16 md:py-20;
+}
+
+/* Títulos principales (usando fuente display) */
+.heading-display {
+  @apply font-display text-3xl md:text-4xl lg:text-5xl tracking-tight;
+}
+
+/* Subtítulos suaves */
+.subheading {
+  @apply text-base md:text-lg text-calmint-dark/70;
+}
+
+/* Botón principal de WhatsApp */
+.btn-whatsapp {
+  @apply inline-flex items-center justify-center rounded-full bg-calmint-green text-white px-6 py-3 text-sm md:text-base font-medium shadow-soft hover:bg-calmint-dark transition-colors;
+}
+
+/* Botón secundario */
+.btn-secondary {
+  @apply inline-flex items-center justify-center rounded-full border border-calmint-green text-calmint-green px-6 py-3 text-sm md:text-base font-medium hover:bg-calmint-green/5 transition-colors;
+}
+
+/* Tarjetas suaves */
+.card-soft {
+  @apply bg-white/80 backdrop-blur-sm shadow-soft rounded-3xl border border-white/60;
+}
