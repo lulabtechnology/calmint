@@ -1,80 +1,110 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
+
+const navLinks = [
+  { href: "#inicio", label: "Inicio" },
+  { href: "#sobre-calmint", label: "Sobre Calmint" },
+  { href: "#productos", label: "Productos" },
+  { href: "#beneficios", label: "Beneficios" },
+  { href: "#novedades", label: "Novedades" },
+  { href: "#contacto", label: "Contacto" },
+];
 
 export default function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <header className="sticky top-0 z-40 bg-calmint-cream/80 backdrop-blur border-b border-calmint-peach/60">
-      <nav className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 border-b border-calmint-peach/40 bg-calmint-cream/80 backdrop-blur">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6">
         {/* Logo + nombre */}
-        <Link href="#inicio" className="flex items-center gap-3">
-          <div className="relative h-10 w-10 rounded-full bg-white shadow-md overflow-hidden border border-calmint-peach/70">
+        <Link
+          href="#inicio"
+          className="flex items-center gap-3"
+          onClick={() => setIsOpen(false)}
+        >
+          <div className="relative h-10 w-10 overflow-hidden rounded-full bg-calmint-peach/60">
             <Image
-              src="/images/calmint-logo.svg"
+              src="/images/calmint-logo.png"
               alt="Logo Calmint Scents"
               fill
-              className="object-contain p-1.5"
+              className="object-cover"
+              sizes="40px"
             />
           </div>
           <div className="flex flex-col leading-tight">
-            <span className="font-serif text-lg md:text-xl text-calmint-dark">
+            <span className="font-display text-lg font-semibold text-calmint-dark">
               Calmint Scents
             </span>
-            <span className="text-[11px] md:text-xs text-calmint-dark/70">
-              Belleza Natural • Aromaterapia • Autocuidado Consciente
+            <span className="text-xs text-calmint-green">
+              Belleza Natural • Aromaterapia
             </span>
           </div>
         </Link>
 
-        {/* Links */}
-        <div className="hidden md:flex items-center gap-6 text-sm">
-          <Link
-            href="#inicio"
-            className="text-calmint-dark/80 hover:text-calmint-dark transition-colors"
-          >
-            Inicio
-          </Link>
-          <Link
-            href="#sobre-calmint"
-            className="text-calmint-dark/80 hover:text-calmint-dark transition-colors"
-          >
-            Sobre Calmint
-          </Link>
-          <Link
-            href="#productos"
-            className="text-calmint-dark/80 hover:text-calmint-dark transition-colors"
-          >
-            Qué ofrecemos
-          </Link>
-          <Link
-            href="#beneficios"
-            className="text-calmint-dark/80 hover:text-calmint-dark transition-colors"
-          >
-            Filosofía
-          </Link>
-          <Link
-            href="#novedades"
-            className="text-calmint-dark/80 hover:text-calmint-dark transition-colors"
-          >
-            Novedades
-          </Link>
-          <Link
-            href="#contacto"
-            className="text-calmint-dark/80 hover:text-calmint-dark transition-colors"
-          >
-            Contacto
-          </Link>
+        {/* Navegación desktop */}
+        <div className="hidden items-center gap-6 text-sm md:flex">
+          {navLinks.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="text-calmint-dark/80 transition hover:text-calmint-green"
+            >
+              {link.label}
+            </a>
+          ))}
         </div>
 
-        {/* Instagram pequeño a la derecha */}
+        {/* Botón WhatsApp desktop */}
         <a
-          href="https://www.instagram.com/michele_mariepty"
+          href="https://wa.me/50760703125?text=Hola%20Calmint%20Scents,%20me%20gustar%C3%ADa%20hacer%20un%20pedido%20o%20recibir%20informaci%C3%B3n."
           target="_blank"
-          rel="noreferrer"
-          className="text-xs md:text-sm text-calmint-dark/80 hover:text-calmint-green transition-colors"
+          rel="noopener noreferrer"
+          className="hidden rounded-full bg-calmint-green px-4 py-2 text-xs font-medium text-calmint-cream shadow-sm transition hover:bg-calmint-dark md:inline-block"
         >
-          @michele_mariepty
+          Escríbeme por WhatsApp
         </a>
+
+        {/* Botón menú móvil */}
+        <button
+          type="button"
+          className="inline-flex items-center justify-center rounded-full border border-calmint-peach/60 bg-white/80 p-2 text-calmint-dark md:hidden"
+          onClick={() => setIsOpen((prev) => !prev)}
+          aria-label="Abrir menú"
+        >
+          {isOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
       </nav>
+
+      {/* Menú móvil */}
+      {isOpen && (
+        <div className="border-t border-calmint-peach/40 bg-calmint-cream/95 px-4 pb-4 pt-2 md:hidden">
+          <div className="flex flex-col gap-3">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="text-sm text-calmint-dark/90"
+                onClick={() => setIsOpen(false)}
+              >
+                {link.label}
+              </a>
+            ))}
+            <a
+              href="https://wa.me/50760703125?text=Hola%20Calmint%20Scents,%20me%20gustar%C3%ADa%20hacer%20un%20pedido%20o%20recibir%20informaci%C3%B3n."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 rounded-full bg-calmint-green px-4 py-2 text-center text-sm font-medium text-calmint-cream shadow-sm"
+              onClick={() => setIsOpen(false)}
+            >
+              Escríbeme por WhatsApp
+            </a>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
