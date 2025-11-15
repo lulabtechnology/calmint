@@ -1,14 +1,9 @@
 // components/PostCard.tsx
 import Image from "next/image";
+import type { Post } from "@prisma/client";
 
 type PostCardProps = {
-  post: {
-    id: string;
-    title: string;
-    description: string;
-    imageUrl: string | null;
-    createdAt: string;
-  };
+  post: Post;
 };
 
 export default function PostCard({ post }: PostCardProps) {
@@ -28,11 +23,17 @@ export default function PostCard({ post }: PostCardProps) {
 
       <div className="p-6 space-y-3">
         <p className="text-xs uppercase tracking-[0.2em] text-calmint-sage">
-          {new Date(post.createdAt).toLocaleDateString("es-PA", {
-            year: "numeric",
-            month: "long",
-            day: "2-digit",
-          })}
+          {post.createdAt instanceof Date
+            ? post.createdAt.toLocaleDateString("es-PA", {
+                year: "numeric",
+                month: "long",
+                day: "2-digit",
+              })
+            : new Date(post.createdAt).toLocaleDateString("es-PA", {
+                year: "numeric",
+                month: "long",
+                day: "2-digit",
+              })}
         </p>
         <h3 className="text-lg font-semibold text-calmint-ink">
           {post.title}
