@@ -1,52 +1,54 @@
 export default function BenefitsSection() {
-  const benefits = [
-    {
-      title: 'Ambientes más relajados',
-      description:
-        'Aromas suaves que ayudan a bajar el ritmo del día, ideal para desconectar de la rutina y crear una atmósfera de calma.'
-    },
-    {
-      title: 'Rituales de autocuidado',
-      description:
-        'Productos pensados para acompañar momentos que son solo tuyos: un baño cálido, una tarde de lectura o tu rutina de noche.'
-    },
-    {
-      title: 'Fragancias cuidadas',
-      description:
-        'Aromas que no invaden, sino que acompañan. Diseñados para sentirse presentes, pero ligeros.'
-    },
-    {
-      title: 'Detalles que abrazan',
-      description:
-        'Presentaciones delicadas que convierten cada producto en un detalle especial para regalar y decorar tu hogar.'
-    }
-  ];
-
   return (
     <section
       id="beneficios"
-      className="section-padding bg-calmint-cream relative"
+      className="py-16 md:py-20 bg-calmint-peach/20"
     >
-      <div className="container-calmint">
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <h2 className="heading-display mb-3">Beneficios de Calmint</h2>
-          <p className="subheading">
-            Más que productos, son pequeños recordatorios de que mereces calma,
-            suavidad y espacios donde respirar profundo.
+      <div className="mx-auto max-w-6xl px-4 space-y-8">
+        <div className="text-center max-w-3xl mx-auto space-y-3">
+          <h2 className="font-serif text-2xl md:text-3xl text-calmint-dark">
+            Beneficios de vivir la experiencia Calmint Scents
+          </h2>
+          <p className="text-sm md:text-base text-calmint-dark/80">
+            No solo es cosmética natural: es un acompañamiento a tu bienestar
+            físico, emocional y energético. Cada creación está pensada para
+            ayudarte a bajar revoluciones, conectar con tu esencia y honrar tus
+            rituales diarios de autocuidado.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {benefits.map((benefit) => (
-            <div key={benefit.title} className="card-soft p-6">
-              <h3 className="font-display text-lg mb-2 text-calmint-dark">
-                {benefit.title}
-              </h3>
-              <p className="text-sm text-calmint-dark/70">
-                {benefit.description}
-              </p>
-            </div>
-          ))}
+        <div className="grid md:grid-cols-3 gap-6 md:gap-7">
+          <div className="bg-white/85 border border-calmint-peach/70 rounded-2xl p-5 shadow-sm space-y-2">
+            <h3 className="font-semibold text-calmint-dark text-sm md:text-base">
+              Bienestar Integral
+            </h3>
+            <p className="text-xs md:text-sm text-calmint-dark/80">
+              Fórmulas que armonizan piel, mente y energía, integrando activos
+              naturales con aromaterapia para que cada producto se convierta en
+              un mini ritual de paz.
+            </p>
+          </div>
+
+          <div className="bg-white/85 border border-calmint-peach/70 rounded-2xl p-5 shadow-sm space-y-2">
+            <h3 className="font-semibold text-calmint-dark text-sm md:text-base">
+              Belleza Consciente
+            </h3>
+            <p className="text-xs md:text-sm text-calmint-dark/80">
+              Ingredientes limpios, fragancias sin ftalatos ni parabenos y
+              procesos artesanales que respetan tu piel y el planeta.
+            </p>
+          </div>
+
+          <div className="bg-white/85 border border-calmint-peach/70 rounded-2xl p-5 shadow-sm space-y-2">
+            <h3 className="font-semibold text-calmint-dark text-sm md:text-base">
+              Energía & Terapias Angelicales
+            </h3>
+            <p className="text-xs md:text-sm text-calmint-dark/80">
+              Blends energéticos, colecciones de arcángeles y chakras, y
+              acompañamiento desde terapias angelicales para sostenerte en
+              procesos emocionales y espirituales.
+            </p>
+          </div>
         </div>
       </div>
     </section>
