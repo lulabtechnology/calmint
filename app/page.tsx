@@ -6,7 +6,8 @@ import BenefitsSection from '@/components/BenefitsSection';
 import PostsSection from '@/components/PostsSection';
 import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
-import { getAllPosts } from '@/lib/posts';
+import { getPosts } from '@/lib/posts';
+
 
 export default async function HomePage() {
   const posts = await getAllPosts();
