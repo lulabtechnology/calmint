@@ -13,7 +13,13 @@ export default function ContactSection() {
 
     const subject = encodeURIComponent('Consulta desde la web Calmint Scents');
     const body = encodeURIComponent(
-      `Nombre: ${name}\nCorreo: ${email}\n\nMensaje:\n${message}`
+      [
+        `Nombre: ${name}`,
+        `Correo: ${email}`,
+        '',
+        'Mensaje:',
+        message,
+      ].join('\n')
     );
 
     // Abre el cliente de correo del usuario
@@ -27,12 +33,6 @@ export default function ContactSection() {
           Contáctanos
         </h2>
 
-        <p className="text-calmint-text mb-8">
-          Este formulario es ilustrativo: al enviarlo se abrirá tu aplicación de
-          correo con un mensaje dirigido a{' '}
-          <span className="font-semibold">Calmintscents@gmail.com</span>.
-        </p>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-calmint-deep mb-1">
@@ -42,7 +42,7 @@ export default function ContactSection() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-xl border border-calmint-peach/60 bg-calmint-cream px-4 py-2 text-calmint-deep focus:outline-none focus:ring-2 focus:ring-calmint-deep/40"
+              className="w-full rounded-xl border border-calmint-peach/60 bg-calmint-cream px-4 py-2 text-calmint-deep placeholder-calmint-text/60 focus:outline-none focus:ring-2 focus:ring-calmint-deep/40"
               placeholder="Tu nombre"
               required
             />
@@ -56,7 +56,7 @@ export default function ContactSection() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-calmint-peach/60 bg-calmint-cream px-4 py-2 text-calmint-deep focus:outline-none focus:ring-2 focus:ring-calmint-deep/40"
+              className="w-full rounded-xl border border-calmint-peach/60 bg-calmint-cream px-4 py-2 text-calmint-deep placeholder-calmint-text/60 focus:outline-none focus:ring-2 focus:ring-calmint-deep/40"
               placeholder="tunombre@email.com"
               required
             />
@@ -70,18 +70,24 @@ export default function ContactSection() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={4}
-              className="w-full rounded-xl border border-calmint-peach/60 bg-calmint-cream px-4 py-2 text-calmint-deep focus:outline-none focus:ring-2 focus:ring-calmint-deep/40"
+              className="w-full rounded-xl border border-calmint-peach/60 bg-calmint-cream px-4 py-2 text-calmint-deep placeholder-calmint-text/60 focus:outline-none focus:ring-2 focus:ring-calmint-deep/40"
               placeholder="Cuéntanos qué necesitas: pedidos, talleres, eventos, terapias angelicales…"
               required
             />
           </div>
 
-          <button
-            type="submit"
-            className="inline-flex items-center justify-center rounded-full bg-calmint-deep px-8 py-2 text-sm font-semibold text-calmint-cream shadow-md hover:bg-calmint-deep/90 transition-colors"
-          >
-            Enviar mensaje
-          </button>
+          <div className="pt-2">
+            <button
+              type="submit"
+              style={{
+                backgroundColor: '#1F3D37', // verde profundo
+                color: '#FFF9F1',           // crema claro
+              }}
+              className="inline-flex items-center justify-center rounded-full px-10 py-3 text-sm font-semibold shadow-md hover:opacity-90 active:opacity-80 transition-opacity"
+            >
+              Enviar mensaje
+            </button>
+          </div>
         </form>
       </div>
     </section>
