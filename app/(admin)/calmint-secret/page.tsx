@@ -1,133 +1,114 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import AdminPostForm from '@/components/AdminPostForm';
+import { useEffect, useState, FormEvent } from "react";
+import AdminPostForm from "@/components/AdminPostForm";
+
+// 🔐 Leemos la variable PÚBLICA de Vercel
+const ADMIN_PASSWORD =
+  process.env.NEXT_PUBLIC_ADMIN_PASSWORD ?? "";
 
 export default function CalmintSecretPage() {
-  const [password, setPassword] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isCheckingLocal, setIsCheckingLocal] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [input, setInput] = useState("");
+  const [isAuth, setIsAuth] = useState(false);
+  const [error, setError] = useState("");
 
+  // Si ya se autenticó antes, lo recordamos con localStorage
   useEffect(() => {
-    const stored = window.localStorage.getItem('calmint-admin-auth');
-    if (stored === 'true') {
-      setIsAuthenticated(true);
+    if (typeof window !== "undefined") {
+      const stored = window.localStorage.getItem("calmint_admin_auth");
+      if (stored === "true") {
+        setIsAuth(true);
+      }
     }
-    setIsCheckingLocal(false);
   }, []);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setLoading(true);
 
-    try {
-      const res = await fetch('/api/admin-login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ password })
-      });
+    if (!ADMIN_PASSWORD) {
+      setError(
+        "La variable NEXT_PUBLIC_ADMIN_PASSWORD no está configurada en el servidor."
+      );
+      return;
+    }
 
-      const data = await res.json();
-
-      if (!res.ok || !data.ok) {
-        setError(data.error || 'Contraseña incorrecta.');
-        setIsAuthenticated(false);
-        window.localStorage.removeItem('calmint-admin-auth');
-      } else {
-        setIsAuthenticated(true);
-        window.localStorage.setItem('calmint-admin-auth', 'true');
-        setPassword('');
+    if (input === ADMIN_PASSWORD) {
+      setIsAuth(true);
+      setError("");
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("calmint_admin_auth", "true");
       }
-    } catch (err) {
-      console.error(err);
-      setError('Error al verificar la contraseña. Intenta de nuevo.');
-    } finally {
-      setLoading(false);
+    } else {
+      setError("Contraseña incorrecta. Intenta de nuevo.");
     }
   };
 
-  if (isCheckingLocal) {
+  // Vista de login
+  if (!isAuth) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-calmint-cream">
-        <p className="text-calmint-dark/70">Cargando...</p>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-calmint-cream px-4">
-        <div className="card-soft max-w-md w-full p-8">
-          <h1 className="heading-display mb-4">Calmint – Admin</h1>
-          <p className="subheading mb-6">
-            Esta sección es solo para la dueña de Calmint. Ingresa la
-            contraseña para crear nuevas novedades.
+      <main className="flex min-h-screen items-center justify-center bg-calmint-cream px-4">
+        <div className="w-full max-w-sm rounded-2xl border border-calmint-peach/60 bg-white/90 p-6 shadow-sm">
+          <h1 className="mb-1 text-lg font-display text-calmint-dark">
+            Calmint Scents – Panel privado
+          </h1>
+          <p className="mb-4 text-sm text-calmint-dark/70">
+            Ingresa la contraseña para gestionar las novedades de Calmint
+            Scents.
           </p>
-          <form onSubmit={handleLogin} className="space-y-4">
+
+          <form onSubmit={handleSubmit} className="space-y-3">
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-calmint-dark/80 mb-1"
-              >
-                Contraseña
+              <label className="mb-1 block text-xs font-medium text-calmint-dark/80">
+                Contraseña de administración
               </label>
               <input
-                id="password"
                 type="password"
-                className="w-full rounded-full border border-calmint-green/40 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-calmint-green/60 bg-white/80"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Introduce tu contraseña secreta"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                className="w-full rounded-lg border border-calmint-peach/70 bg-calmint-cream/60 px-3 py-2 text-sm text-calmint-dark outline-none ring-calmint-green/40 focus:ring-2"
               />
             </div>
+
             {error && (
-              <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-3 py-2">
+              <p className="text-xs text-red-500">
                 {error}
               </p>
             )}
+
             <button
               type="submit"
-              className="btn-whatsapp w-full justify-center"
-              disabled={loading}
+              className="w-full rounded-full bg-calmint-green px-4 py-2 text-sm font-medium text-calmint-cream shadow-sm transition hover:bg-calmint-dark"
             >
-              {loading ? 'Verificando...' : 'Entrar'}
+              Entrar
             </button>
           </form>
+
+          <p className="mt-3 text-[11px] text-calmint-dark/50">
+            Si olvidaste la contraseña, actualízala en Vercel en la variable{" "}
+            <code className="rounded bg-calmint-cream px-1">
+              NEXT_PUBLIC_ADMIN_PASSWORD
+            </code>
+            .
+          </p>
         </div>
-      </div>
+      </main>
     );
   }
 
+  // Vista cuando ya estás autenticado
   return (
-    <div className="min-h-screen bg-calmint-cream px-4 py-10">
-      <div className="container-calmint">
-        <div className="flex items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="heading-display mb-2">Panel de Novedades</h1>
-            <p className="subheading">
-              Crea nuevos posts para que aparezcan automáticamente en tu
-              landing de Calmint.
-            </p>
-          </div>
-          <button
-            className="text-xs text-calmint-dark/70 underline"
-            onClick={() => {
-              window.localStorage.removeItem('calmint-admin-auth');
-              setIsAuthenticated(false);
-            }}
-          >
-            Cerrar sesión
-          </button>
-        </div>
-        <div className="card-soft p-6 md:p-8">
-          <AdminPostForm />
-        </div>
+    <main className="min-h-screen bg-calmint-cream px-4 py-8">
+      <div className="mx-auto max-w-3xl rounded-2xl border border-calmint-peach/60 bg-white/90 p-6 shadow-sm">
+        <h1 className="mb-2 text-xl font-display text-calmint-dark">
+          Panel de Novedades – Calmint Scents
+        </h1>
+        <p className="mb-4 text-sm text-calmint-dark/70">
+          Crea nuevos posts para la sección “Novedades Calmint” y, si lo
+          necesitas, elimina el último post publicado.
+        </p>
+
+        <AdminPostForm />
       </div>
-    </div>
+    </main>
   );
 }
