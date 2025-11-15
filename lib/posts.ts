@@ -1,32 +1,46 @@
-import { prisma } from './db';
+// lib/posts.ts
+import { prisma } from "./prisma";
 
 export type Post = {
-  id: string;
+  id: number; // AHORA ES number, no string
   title: string;
   description: string;
-  imageUrl: string;
+  imageUrl: string | null;
   createdAt: Date;
 };
 
-export async function getAllPosts(): Promise<Post[]> {
+export async function getPosts(): Promise<Post[]> {
   const posts = await prisma.post.findMany({
-    orderBy: { createdAt: 'desc' }
+    orderBy: { createdAt: "desc" },
   });
+
   return posts;
 }
 
 export async function createPost(data: {
   title: string;
   description: string;
-  imageUrl: string;
+  imageUrl?: string;
 }): Promise<Post> {
   const post = await prisma.post.create({
     data: {
       title: data.title,
       description: data.description,
-      imageUrl: data.imageUrl
-    }
+      imageUrl: data.imageUrl ?? null,
+    },
   });
 
   return post;
+}
+
+export async function deleteLastPost(): Promise<void> {
+  const lastPost = await prisma.post.findFirst({
+    orderBy: { createdAt: "desc" },
+  });
+
+  if (!lastPost) return;
+
+  await prisma.post.delete({
+    where: { id: lastPost.id },
+  });
 }
