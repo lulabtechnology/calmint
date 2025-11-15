@@ -7,6 +7,7 @@ import PostsSection from '@/components/PostsSection';
 import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
 import { getPosts } from '@/lib/posts';
+export const dynamic = 'force-dynamic';
 
 
 export default async function HomePage() {
