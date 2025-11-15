@@ -10,7 +10,7 @@ import { getPosts } from '@/lib/posts';
 
 
 export default async function HomePage() {
-  const posts = await getAllPosts();
+  const posts = await getPosts();
 
   return (
     <>
