@@ -1,38 +1,44 @@
+// components/Footer.tsx
 export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-calmint-peach/60 bg-calmint-cream/95">
-      <div className="mx-auto max-w-6xl px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs md:text-sm text-calmint-dark/80">
-        <div className="space-y-1 text-center md:text-left">
-          <p>
-            © {year} <span className="font-semibold">Calmint Scents</span>. Todos
-            los derechos reservados.
-          </p>
-          <p className="text-[11px] md:text-xs">
-            Hecho con calma y propósito desde Panamá. Belleza natural,
-            aromaterapia y bienestar energético.
-          </p>
-        </div>
+    <footer className="bg-calmint-cream border-t border-calmint-peach/30">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-sm text-calmint-text space-y-2">
+        <p>
+          © {year}{' '}
+          <span className="font-semibold">Calmint Scents</span>. Todos los
+          derechos reservados.
+        </p>
 
-        <div className="flex flex-col items-center md:items-end gap-1 text-[11px] md:text-xs">
+        <p>
+          Hecho con calma y propósito desde Panamá. Belleza natural, aromaterapia
+          y bienestar energético.
+        </p>
+
+        <p>
+          WhatsApp:{' '}
           <a
             href="https://wa.me/50760703125"
             target="_blank"
             rel="noreferrer"
-            className="hover:text-calmint-green transition-colors"
+            className="font-semibold text-calmint-deep underline-offset-4 hover:underline"
           >
-            WhatsApp: +507 6070-3125
+            +507 6070-3125
           </a>
+        </p>
+
+        <p>
+          Instagram:{' '}
           <a
-            href="https://www.instagram.com/michele_mariepty"
+            href="https://instagram.com/calmintscents"
             target="_blank"
             rel="noreferrer"
-            className="hover:text-calmint-green transition-colors"
+            className="font-semibold text-calmint-deep underline-offset-4 hover:underline"
           >
-            Instagram: @michele_mariepty
+            @calmintscents
           </a>
-        </div>
+        </p>
       </div>
     </footer>
   );
