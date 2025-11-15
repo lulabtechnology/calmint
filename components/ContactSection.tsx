@@ -1,73 +1,96 @@
-// components/ContactSection.tsx
+"use client";
+
+import React from "react";
 
 export default function ContactSection() {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const form = e.currentTarget;
+    const name =
+      (form.elements.namedItem("name") as HTMLInputElement)?.value || "";
+    const email =
+      (form.elements.namedItem("email") as HTMLInputElement)?.value || "";
+    const message =
+      (form.elements.namedItem("message") as HTMLTextAreaElement)?.value || "";
+
+    const body = encodeURIComponent(
+      `Nombre: ${name}\nCorreo: ${email}\n\nMensaje:\n${message}`
+    );
+
+    window.location.href = `mailto:Calmintscents@gmail.com?subject=Nuevo mensaje desde la web Calmint Scents&body=${body}`;
+  };
+
   return (
-    <section id="contacto" className="bg-calmint-cream py-16">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-semibold text-calmint-deep mb-4">
+    <section id="contacto" className="py-20 bg-[#FFF8E9]">
+      <div className="mx-auto max-w-3xl px-4">
+        <h2 className="text-3xl font-semibold tracking-tight text-emerald-900">
           Contáctanos
         </h2>
 
-        <p className="text-calmint-text mb-8">
+        <p className="mt-3 text-base text-emerald-900/80">
           Este formulario es ilustrativo: al enviarlo se abrirá tu aplicación de
-          correo con un mensaje dirigido a{' '}
+          correo con un mensaje dirigido a{" "}
           <span className="font-semibold">Calmintscents@gmail.com</span>.
         </p>
 
-        {/* Formulario ilustrativo. El envío abre el cliente de correo con mailto */}
         <form
-          action="mailto:Calmintscents@gmail.com"
-          method="GET"
-          encType="text/plain"
-          className="space-y-4"
+          onSubmit={handleSubmit}
+          className="mt-8 grid gap-6 rounded-3xl bg-white/70 p-6 shadow-sm"
         >
           <div>
-            <label className="block text-sm font-medium text-calmint-deep mb-1">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-emerald-900"
+            >
               Tu nombre
             </label>
             <input
+              id="name"
+              name="name"
               type="text"
-              className="w-full rounded-xl border border-calmint-peach/60 bg-calmint-cream px-4 py-2 text-calmint-deep placeholder-calmint-text/60 focus:outline-none focus:ring-2 focus:ring-calmint-deep/40"
+              className="mt-2 w-full rounded-xl border border-emerald-100 bg-emerald-50/30 px-4 py-3 text-sm text-emerald-900 placeholder:text-emerald-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
               placeholder="Tu nombre"
-              name="nombre"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-calmint-deep mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-emerald-900"
+            >
               Correo
             </label>
             <input
+              id="email"
+              name="email"
               type="email"
-              className="w-full rounded-xl border border-calmint-peach/60 bg-calmint-cream px-4 py-2 text-calmint-deep placeholder-calmint-text/60 focus:outline-none focus:ring-2 focus:ring-calmint-deep/40"
+              className="mt-2 w-full rounded-xl border border-emerald-100 bg-emerald-50/30 px-4 py-3 text-sm text-emerald-900 placeholder:text-emerald-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
               placeholder="tunombre@email.com"
-              name="correo"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-calmint-deep mb-1">
+            <label
+              htmlFor="message"
+              className="block text-sm font-medium text-emerald-900"
+            >
               Mensaje
             </label>
             <textarea
+              id="message"
+              name="message"
               rows={4}
-              className="w-full rounded-xl border border-calmint-peach/60 bg-calmint-cream px-4 py-2 text-calmint-deep placeholder-calmint-text/60 focus:outline-none focus:ring-2 focus:ring-calmint-deep/40"
+              className="mt-2 w-full rounded-xl border border-emerald-100 bg-emerald-50/30 px-4 py-3 text-sm text-emerald-900 placeholder:text-emerald-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
               placeholder="Cuéntanos qué necesitas: pedidos, talleres, eventos, terapias angelicales…"
-              name="mensaje"
             />
           </div>
 
-          <div className="pt-2">
+          {/* BOTÓN BIEN VISIBLE */}
+          <div className="mt-2">
             <button
               type="submit"
-              className="
-                inline-flex items-center justify-center
-                rounded-full px-10 py-3
-                text-sm font-semibold
-                bg-calmint-deep text-calmint-cream
-                shadow-md hover:bg-calmint-deep/90 active:bg-calmint-deep/80
-                transition-colors
-              "
+              className="inline-flex items-center justify-center rounded-full bg-[#008C7A] px-10 py-3 text-base font-semibold text-white shadow-md transition hover:bg-[#007364] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#008C7A]"
             >
               Enviar mensaje
             </button>
