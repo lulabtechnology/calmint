@@ -33,6 +33,12 @@ export default function ContactSection() {
           Contáctanos
         </h2>
 
+        <p className="text-calmint-text mb-8">
+          Este formulario es ilustrativo: al enviarlo se abrirá tu aplicación de
+          correo con un mensaje dirigido a{' '}
+          <span className="font-semibold">Calmintscents@gmail.com</span>.
+        </p>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-calmint-deep mb-1">
