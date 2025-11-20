@@ -1,113 +1,302 @@
 "use client";
 
-import { useEffect, useState, FormEvent } from "react";
-import AdminPostForm from "@/components/AdminPostForm";
+import { useState } from "react";
 
-// 🔐 Leemos la variable PÚBLICA de Vercel
-const ADMIN_PASSWORD =
-  process.env.NEXT_PUBLIC_ADMIN_PASSWORD ?? "";
+type Post = {
+  id: number;
+  title: string;
+  description: string;
+  imageUrl: string | null;
+  createdAt: string;
+};
 
 export default function CalmintSecretPage() {
-  const [input, setInput] = useState("");
-  const [isAuth, setIsAuth] = useState(false);
-  const [error, setError] = useState("");
+  const [step, setStep] = useState<"login" | "panel">("login");
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
 
-  // Si ya se autenticó antes, lo recordamos con localStorage
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const stored = window.localStorage.getItem("calmint_admin_auth");
-      if (stored === "true") {
-        setIsAuth(true);
-      }
-    }
-  }, []);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [message, setMessage] = useState<string | null>(null);
+  const [lastPost, setLastPost] = useState<Post | null>(null);
+  const [panelLoading, setPanelLoading] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  // 🔐 Login usando la API /api/check-admin
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
+    setLoginLoading(true);
+    setLoginError("");
 
-    if (!ADMIN_PASSWORD) {
-      setError(
-        "La variable NEXT_PUBLIC_ADMIN_PASSWORD no está configurada en el servidor."
-      );
-      return;
-    }
+    try {
+      const res = await fetch("/api/check-admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
 
-    if (input === ADMIN_PASSWORD) {
-      setIsAuth(true);
-      setError("");
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem("calmint_admin_auth", "true");
+      const data = await res.json();
+
+      if (data.ok) {
+        setStep("panel");
+        setPassword("");
+        // Cargar último post al entrar
+        await fetchLastPost();
+      } else {
+        setLoginError("Contraseña incorrecta.");
       }
-    } else {
-      setError("Contraseña incorrecta. Intenta de nuevo.");
+    } catch (err) {
+      console.error(err);
+      setLoginError("Hubo un error al validar la contraseña.");
+    } finally {
+      setLoginLoading(false);
     }
-  };
+  }
 
-  // Vista de login
-  if (!isAuth) {
+  // 🔁 Cargar último post
+  async function fetchLastPost() {
+    try {
+      const res = await fetch("/api/posts/last", { cache: "no-store" });
+      if (!res.ok) {
+        setLastPost(null);
+        return;
+      }
+      const data = await res.json();
+      setLastPost(data.post ?? null);
+    } catch (err) {
+      console.error(err);
+      setLastPost(null);
+    }
+  }
+
+  // ➕ Crear post nuevo
+  async function handleCreatePost(e: React.FormEvent) {
+    e.preventDefault();
+    setPanelLoading(true);
+    setMessage(null);
+
+    try {
+      const res = await fetch("/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          description,
+          imageUrl: imageUrl || null,
+        }),
+      });
+
+      if (!res.ok) {
+        setMessage("No se pudo crear el post. Revisa los datos.");
+        return;
+      }
+
+      setTitle("");
+      setDescription("");
+      setImageUrl("");
+      setMessage("Post creado correctamente ✅");
+
+      await fetchLastPost();
+    } catch (err) {
+      console.error(err);
+      setMessage("Ocurrió un error al crear el post.");
+    } finally {
+      setPanelLoading(false);
+    }
+  }
+
+  // 🗑️ Eliminar último post
+  async function handleDeleteLast() {
+    if (!lastPost) return;
+    const confirmDelete = window.confirm(
+      "¿Seguro que deseas eliminar el último post?"
+    );
+    if (!confirmDelete) return;
+
+    setPanelLoading(true);
+    setMessage(null);
+
+    try {
+      const res = await fetch("/api/posts/last", {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        setMessage("No se pudo eliminar el último post.");
+        return;
+      }
+
+      setMessage("Último post eliminado correctamente 🗑️");
+      await fetchLastPost();
+    } catch (err) {
+      console.error(err);
+      setMessage("Ocurrió un error al eliminar el post.");
+    } finally {
+      setPanelLoading(false);
+    }
+  }
+
+  // UI: LOGIN
+  if (step === "login") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-calmint-cream px-4">
-        <div className="w-full max-w-sm rounded-2xl border border-calmint-peach/60 bg-white/90 p-6 shadow-sm">
-          <h1 className="mb-1 text-lg font-display text-calmint-dark">
-            Calmint Scents – Panel privado
+      <main className="min-h-screen bg-calmint-cream flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-white/80 rounded-3xl shadow-lg p-8 border border-calmint-green/10">
+          <h1 className="text-2xl font-semibold text-calmint-green mb-2">
+            Panel de Novedades – Calmìnt Scents
           </h1>
-          <p className="mb-4 text-sm text-calmint-dark/70">
-            Ingresa la contraseña para gestionar las novedades de Calmint
-            Scents.
+          <p className="text-sm text-calmint-text/70 mb-6">
+            Ingresa la contraseña de administración para gestionar las
+            novedades que aparecen en la landing.
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="mb-1 block text-xs font-medium text-calmint-dark/80">
-                Contraseña de administración
+              <label className="block text-sm font-medium text-calmint-text mb-1">
+                Contraseña
               </label>
               <input
                 type="password"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                className="w-full rounded-lg border border-calmint-peach/70 bg-calmint-cream/60 px-3 py-2 text-sm text-calmint-dark outline-none ring-calmint-green/40 focus:ring-2"
+                className="w-full rounded-2xl border border-calmint-green/20 bg-calmint-cream/60 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-calmint-green focus:border-transparent"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
               />
             </div>
 
-            {error && (
-              <p className="text-xs text-red-500">
-                {error}
+            {loginError && (
+              <p className="text-sm text-red-500 bg-red-50 rounded-2xl px-3 py-2">
+                {loginError}
               </p>
             )}
 
             <button
               type="submit"
-              className="w-full rounded-full bg-calmint-green px-4 py-2 text-sm font-medium text-calmint-cream shadow-sm transition hover:bg-calmint-dark"
+              disabled={loginLoading}
+              className="w-full rounded-2xl bg-calmint-green text-white font-medium py-2.5 hover:bg-calmint-green/90 transition disabled:opacity-60"
             >
-              Entrar
+              {loginLoading ? "Verificando..." : "Entrar al panel"}
             </button>
           </form>
-
-          <p className="mt-3 text-[11px] text-calmint-dark/50">
-            Si olvidaste la contraseña, actualízala en Vercel en la variable{" "}
-            <code className="rounded bg-calmint-cream px-1">
-              NEXT_PUBLIC_ADMIN_PASSWORD
-            </code>
-            .
-          </p>
         </div>
       </main>
     );
   }
 
-  // Vista cuando ya estás autenticado
+  // UI: PANEL DE NOVEDADES
   return (
-    <main className="min-h-screen bg-calmint-cream px-4 py-8">
-      <div className="mx-auto max-w-3xl rounded-2xl border border-calmint-peach/60 bg-white/90 p-6 shadow-sm">
-        <h1 className="mb-2 text-xl font-display text-calmint-dark">
-          Panel de Novedades – Calmint Scents
-        </h1>
-        <p className="mb-4 text-sm text-calmint-dark/70">
-          Crea nuevos posts para la sección “Novedades Calmint” y, si lo
-          necesitas, elimina el último post publicado.
-        </p>
+    <main className="min-h-screen bg-calmint-cream px-4 py-10">
+      <div className="max-w-4xl mx-auto bg-white/80 rounded-3xl shadow-lg border border-calmint-green/10 p-8 space-y-8">
+        <header className="flex items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-semibold text-calmint-green">
+              Panel de Novedades – Calmìnt Scents
+            </h1>
+            <p className="text-sm text-calmint-text/70">
+              Crea nuevos posts para la sección “Novedades Calmint” y, si lo
+              necesitas, elimina el último post publicado.
+            </p>
+          </div>
+        </header>
 
-        <AdminPostForm />
+        <section className="space-y-4">
+          <h2 className="text-lg font-semibold text-calmint-text">
+            Crear nuevo post
+          </h2>
+          <form onSubmit={handleCreatePost} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-calmint-text mb-1">
+                Título del post
+              </label>
+              <input
+                className="w-full rounded-2xl border border-calmint-green/20 bg-calmint-cream/60 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-calmint-green focus:border-transparent"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-calmint-text mb-1">
+                Descripción corta
+              </label>
+              <textarea
+                className="w-full rounded-2xl border border-calmint-green/20 bg-calmint-cream/60 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-calmint-green focus:border-transparent min-h-[100px]"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-calmint-text mb-1">
+                URL de la imagen
+              </label>
+              <input
+                className="w-full rounded-2xl border border-calmint-green/20 bg-calmint-cream/60 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-calmint-green focus:border-transparent"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                placeholder="Pega aquí la URL de la imagen (Cloudinary, etc.)"
+              />
+              <p className="text-xs text-calmint-text/60 mt-1">
+                Puedes usar imágenes subidas a servicios como Cloudinary o más
+                adelante a la carpeta <code>/public/images</code> del proyecto.
+              </p>
+            </div>
+
+            {message && (
+              <p className="text-sm text-calmint-text bg-calmint-cream/80 border border-calmint-green/20 rounded-2xl px-3 py-2">
+                {message}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={panelLoading}
+              className="inline-flex items-center rounded-2xl bg-calmint-green text-white font-medium px-5 py-2.5 hover:bg-calmint-green/90 transition disabled:opacity-60"
+            >
+              {panelLoading ? "Guardando..." : "Crear post"}
+            </button>
+          </form>
+        </section>
+
+        <section className="space-y-4 border-t border-calmint-green/10 pt-6">
+          <h2 className="text-lg font-semibold text-calmint-text">
+            Último post publicado
+          </h2>
+
+          {lastPost ? (
+            <div className="rounded-2xl border border-calmint-green/20 bg-calmint-cream/60 p-4 space-y-2 text-sm">
+              <p className="text-xs text-calmint-text/60">
+                ID: {lastPost.id} ·{" "}
+                {new Date(lastPost.createdAt).toLocaleString("es-PA")}
+              </p>
+              <p className="font-semibold text-calmint-text">
+                {lastPost.title}
+              </p>
+              <p className="text-calmint-text/80">{lastPost.description}</p>
+              {lastPost.imageUrl && (
+                <p className="text-xs text-calmint-text/70 break-all">
+                  Imagen: {lastPost.imageUrl}
+                </p>
+              )}
+
+              <button
+                type="button"
+                onClick={handleDeleteLast}
+                disabled={panelLoading}
+                className="mt-2 inline-flex items-center rounded-2xl bg-red-500 text-white text-xs font-medium px-4 py-1.5 hover:bg-red-600 transition disabled:opacity-60"
+              >
+                Eliminar último post
+              </button>
+            </div>
+          ) : (
+            <p className="text-sm text-calmint-text/70">
+              No hay posts publicados todavía.
+            </p>
+          )}
+        </section>
       </div>
     </main>
   );
